@@ -12,7 +12,7 @@
 
 ## 🎯 What This Is
 
-This is a **personal project** I built to combine my background in energy engineering with my passion for programming. As an energy engineer, I work with solar systems daily and wanted to create a practical tool that:
+This is a **personal project** I built to combine my background in energy engineering with my passion for programming. As an energy engineer, I work with Python daily and wanted to create a practical tool for PV systems that:
 
 - Forecasts solar production for the next day
 - Uses real physics models (not just rough estimates)
