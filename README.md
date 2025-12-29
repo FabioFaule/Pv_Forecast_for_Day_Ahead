@@ -83,7 +83,7 @@ That's it!
 
 1. **Clone this thing**
 ```bash
-git clone https://github.com/yourusername/pv-forecast.git
+git clone https://github.com/FabioFaule/pv-forecast.git
 cd pv-forecast
 ```
 
