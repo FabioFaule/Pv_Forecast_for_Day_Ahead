@@ -1,133 +1,108 @@
 # ☀️ PV Day-Ahead Forecast
 
-> Professional photovoltaic production forecasting web application with advanced solar modeling
+> A photovoltaic production forecasting tool built by an energy engineer who loves to code
 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
-[![pvlib](https://img.shields.io/badge/pvlib-0.10+-orange.svg)](https://pvlib-python.readthedocs.io/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Latest-green.svg)](https://fastapi.tiangolo.com/)
+[![pvlib](https://img.shields.io/badge/pvlib-python-orange.svg)](https://pvlib-python.readthedocs.io/)
 
-**[Live Demo](#) | [Documentation](#features) | [API Reference](#api-endpoints)**
-
----
-
-## 📸 Screenshots
-
-<div align="center">
-  <img src="docs/screenshots/main-interface.png" alt="Main Interface" width="800"/>
-  <p><em>Interactive map-based configuration and real-time forecasting</em></p>
-</div>
-
-<div align="center">
-  <img src="docs/screenshots/results.png" alt="Forecast Results" width="800"/>
-  <p><em>Detailed hourly production curves with weather data</em></p>
-</div>
+**[Live Demo](#) (coming soon)**
 
 ---
 
-## 🎯 Project Overview
+## 🎯 What This Is
 
-This is a **production-grade web application** for forecasting photovoltaic energy production 24 hours ahead. Built as a portfolio project to demonstrate full-stack development skills, it combines:
+This is a **personal project** I built to combine my background in energy engineering with my passion for programming. As an energy engineer, I work with solar systems daily and wanted to create a practical tool that:
 
-- **Advanced physics modeling** (pvlib-python)
-- **Real-time weather APIs** (Open-Meteo)
-- **Modern web architecture** (FastAPI + vanilla JS)
-- **Professional UI/UX** with interactive maps and charts
+- Forecasts solar production for the next day
+- Uses real physics models (not just rough estimates)
+- Has a nice UI that non-technical people can actually use
+- Helps me learn full-stack web development
 
-The application is designed to showcase software engineering best practices while solving a real-world problem in renewable energy.
+**Disclaimer**: I'm not a professional software developer - I'm an engineer who enjoys coding and building things. The code might not follow all best practices, but it works and I'm proud of it! 🚀
+
+---
+
+## 📸 What It Looks Like
+
+<div align="center">
+  <img src="docs/screenshots/demo.gif" alt="App Demo" width="800"/>
+  <p><em>Interactive interface with map, charts, and weather data</em></p>
+</div>
 
 ---
 
 ## ✨ Features
 
-### Core Functionality
-- **📍 Interactive Location Selection**
-  - Drag-and-drop map marker (Leaflet)
-  - Address search with geocoding (Nominatim API)
-  - Manual coordinate input
-  
-- **⚙️ Configurable System Parameters**
-  - Plant capacity (kWp)
-  - Panel tilt angle (0-90°)
-  - Azimuth orientation with custom values
-  - Advanced loss modeling (DC/AC cables, mismatch, soiling)
-  
-- **🔬 Professional Solar Modeling**
-  - Perez transposition model for POA irradiance
-  - NOCT cell temperature model
-  - Erbs decomposition (DNI/DHI from GHI)
-  - Multiple module technology presets (mono/poly/thin-film)
+### What It Does Well
+- **📍 Location Selection**: Click on a map or search for an address
+- **⚙️ Plant Configuration**: Set your system parameters (power, tilt, orientation)
+- **🔬 Physics-Based Modeling**: Uses pvlib (the industry standard library)
+- **📊 Detailed Output**: Hourly production curve, weather data, performance metrics
+- **🌐 Bilingual**: Italian and English (my English might need work 😅)
 
-### Advanced Features
-- **📊 Comprehensive Metrics**
-  - Performance Ratio (PR)
-  - Capacity Factor
-  - Specific Yield (kWh/kWp)
-  - Cell temperature tracking
-  
-- **🌤️ Weather Integration**
-  - Hourly temperature, cloud cover, wind speed
-  - Plane-of-array (POA) irradiance calculation
-  - Visual weather summary cards
-  
-- **📈 Interactive Visualizations**
-  - Hourly production curve (Chart.js)
-  - Detailed weather table
-  - Real-time metrics dashboard
+### Advanced Options
+- Different module technologies (mono, poly, thin-film)
+- Granular loss modeling (DC/AC cables, mismatch, soiling)
+- Cell temperature calculations
+- Albedo settings for different ground types
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Backend
-- **FastAPI** - Modern async web framework
-- **pvlib-python** - Solar energy modeling library
-- **Pandas** - Data manipulation
-- **Pydantic** - Data validation
-- **Open-Meteo API** - Weather forecasts
+**Backend:**
+- **FastAPI** - Because it's modern and has great docs
+- **pvlib-python** - The scientific library I use professionally
+- **Pandas** - Can't live without it
+- **Open-Meteo API** - Free weather data (no API key needed!)
 
-### Frontend
-- **Vanilla JavaScript** - No framework overhead
-- **Leaflet** - Interactive maps
-- **Chart.js** - Data visualization
-- **CSS Grid/Flexbox** - Responsive layout
+**Frontend:**
+- **Vanilla JavaScript** - I'm learning React but started simple
+- **Leaflet** - For the interactive map
+- **Chart.js** - Makes pretty graphs
+- **CSS Grid/Flexbox** - Trial and error until it looked good
 
-### Why This Stack?
-- ✅ **Production-ready**: FastAPI powers major APIs at scale
-- ✅ **Scientific accuracy**: pvlib is the industry standard for PV modeling
-- ✅ **Lightweight**: No heavy JS framework = faster load times
-- ✅ **Maintainable**: Clean architecture with clear separation of concerns
+**Why These Choices?**
+- I knew pvlib was a pretty good and functional library
+- FastAPI was easier to learn than others
+- Didn't want to overcomplicate with a frontend framework (yet)
+- Wanted to focus on the engineering problem, not tooling
 
 ---
 
-## 🚀 Quick Start
+## 🚀 How to Run It
 
 ### Prerequisites
-- Python 3.9+
-- pip
+```bash
+Python 3.9 or higher
+That's it!
+```
 
 ### Installation
 
-1. **Clone the repository**
+1. **Clone this thing**
 ```bash
 git clone https://github.com/yourusername/pv-forecast.git
 cd pv-forecast
 ```
 
-2. **Install dependencies**
+2. **Install Python packages**
 ```bash
 pip install -r backend/requirements.txt
 ```
 
-3. **Run the application**
+3. **Start the server**
 ```bash
 uvicorn backend.main:app --reload
 ```
 
-4. **Open in browser**
+4. **Open your browser**
 ```
 http://localhost:8000
 ```
+
+That's it! No database, no environment variables, no complicated setup.
 
 ---
 
@@ -136,166 +111,123 @@ http://localhost:8000
 ```
 pv-forecast/
 ├── backend/
-│   ├── __init__.py
-│   ├── main.py           # FastAPI app & routes
-│   ├── meteo.py          # Weather API integration
-│   ├── pv_model.py       # Solar physics calculations
-│   ├── schemas.py        # Pydantic models
+│   ├── main.py           # API endpoints
+│   ├── meteo.py          # Gets weather from Open-Meteo
+│   ├── pv_model.py       # The physics magic ✨
+│   ├── schemas.py        # Data validation
 │   └── requirements.txt
 ├── frontend/
-│   ├── index.html        # Main interface
-│   ├── style.css         # Custom styling
-│   └── app.js            # Client-side logic
-├── docs/
-│   └── screenshots/
-└── README.md
+│   ├── index.html        # The UI
+│   ├── style.css         # Made it look decent
+│   └── app.js            # Handles user interactions
+└── README.md             # You are here!
 ```
 
----
-
-## 🔌 API Endpoints
-
-### `POST /api/forecast`
-
-Calculate day-ahead PV production forecast.
-
-**Request Body:**
-```json
-{
-  "lat": 45.4642,
-  "lon": 9.1900,
-  "power_kwp": 5.5,
-  "tilt": 30,
-  "azimuth": 0,
-  "module_type": "mono_standard",
-  "dc_losses": 0.02,
-  "ac_losses": 0.01,
-  "inverter_efficiency": 0.97,
-  "albedo": 0.20
-}
-```
-
-**Response:**
-```json
-{
-  "date": "2025-12-30",
-  "energy_kwh": 18.45,
-  "hourly": [
-    {
-      "hour": "08:00",
-      "power_kw": 1.234,
-      "temp": 15.2,
-      "cloud_cover": 30,
-      "poa": 450.5
-    }
-  ],
-  "advanced_metrics": {
-    "performance_ratio": 82.5,
-    "capacity_factor": 15.8,
-    "specific_yield": 3.35
-  }
-}
-```
+Simple and flat - I like to keep things organized but not over-engineered.
 
 ---
 
-## 🧮 Solar Modeling Details
+## 🧮 How the Solar Model Works
 
-The application implements state-of-the-art PV modeling:
+I tried to keep this scientifically accurate while being practical:
 
-1. **Weather Data** → Open-Meteo forecast (temperature, clouds, wind)
-2. **Clear-Sky GHI** → Ineichen model
-3. **Cloud Attenuation** → GHI = clear_sky × (1 - a × cloud^b)
-4. **DNI/DHI Decomposition** → Erbs correlation
-5. **POA Irradiance** → Perez transposition model
-6. **Cell Temperature** → NOCT model with wind cooling
-7. **DC Power** → P = P_nom × (POA/1000) × (1 + γ(T_cell - 25))
-8. **System Losses** → DC cables, AC cables, mismatch, soiling, inverter
+1. **Get tomorrow's weather** → Open-Meteo API (temp, clouds, wind)
+2. **Calculate clear-sky irradiance** → Ineichen model
+3. **Apply cloud cover** → Empirical correlation
+4. **Split into direct/diffuse** → Erbs decomposition
+5. **Transpose to panel plane** → Perez model (accounts for view angles)
+6. **Calculate cell temperature** → NOCT model with wind cooling
+7. **Compute DC power** → Temperature-corrected efficiency
+8. **Apply system losses** → Cables, inverter, mismatch, dirt
 
----
-
-## 🎓 Key Learning Outcomes
-
-This project demonstrates:
-
-- **API Design**: RESTful endpoints with proper validation
-- **Scientific Computing**: Integration of research-grade libraries
-- **Frontend Skills**: Responsive UI without frameworks
-- **Data Visualization**: Interactive charts and maps
-- **Error Handling**: Robust validation and user feedback
-- **Code Organization**: Clean architecture with separation of concerns
-- **Documentation**: Professional README and inline comments
+All equations come from pvlib's documentation - I didn't invent anything, just connected the pieces.
 
 ---
 
-## 🚧 Future Enhancements
+## 🎓 What I Learned
 
-- [ ] Historical production comparison
-- [ ] Multi-day forecasts
-- [ ] Database integration for user profiles
-- [ ] Authentication system
-- [ ] Export reports (PDF/CSV)
-- [ ] Mobile app (React Native)
-- [ ] Machine learning weather corrections
-- [ ] Real-time monitoring integration
+This project was a great learning experience:
 
----
+- **FastAPI**: Coming from Flask, the async stuff was confusing at first
+- **Frontend JavaScript**: I mostly work in Python, so DOM manipulation was new
+- **API design**: Figuring out what data structure makes sense
+- **CSS**: Making things responsive is really nice but harder than I thought
 
-## 📊 Performance Metrics
-
-- **API Response Time**: ~200-500ms (including weather API call)
-- **Frontend Load Time**: <1s (no heavy frameworks)
-- **Model Accuracy**: ±10-15% vs real production (weather-dependent)
-- **Supported Languages**: English, Italian (i18n ready)
+**Biggest Challenge**: Getting the timezone handling right, Weather and FastAPIs, user input, and Python PVLIB as I never used it before
 
 ---
 
-## 🤝 Contributing
+## 🐛 Known Issues
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Being honest about limitations:
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- **Weather Accuracy**: Open-Meteo is good but not perfect. Cloud cover can be off.
+- **No Historical Data**: Only shows tomorrow's forecast (for now)
+- **Mobile UI**: Works okay but could be better
+- **No User Accounts**: Everything is client-side, no saved configs
+- **Limited Error Messages**: Sometimes fails silently if weather API is down
+- **Code Quality**: Some functions are too long, need refactoring
+
+I'm aware of these and working on improvements when I have time!
+
+---
+
+## 🚧 Future Ideas
+
+Things I'd like to add (no promises on timeline):
+
+- [ ] Multi-day forecasts (7 days, 30 days, etc)
+- [ ] Provide Energy production based on TMY (PVGIS integration)
+- [ ] Consider the horizon
+- [ ] Compare forecast vs actual production (need data source)
+- [ ] Save favorite locations
+- [ ] Export data to CSV/json
+- [ ] Maybe a database for user profiles?
+- [ ] Learn React and rebuild the frontend properly
 
 ---
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - do whatever you want with this code. If it helps someone, great!
 
 ---
 
-## 👤 Author
+## 👤 About Me
 
-**Fabio Faule**
+**Energy Engineer | Python and ML Enthusiast **
 
+I work in the renewable energy sector and code small tools as a hobby and to make my job easier. I'm comfortable with:
+- Python (NumPy, Pandas, pvlib, matplotlib)
+- Energy modeling and simulations
+- Data analysis and visualization
+- Basic web development (still learning!)
+
+
+**Find me:**
 - GitHub: [@yourusername](https://github.com/FabioFaule)
-- LinkedIn: [Your LinkedIn](www.linkedin.com/in/fabio-faule)
+- LinkedIn: [Your Profile](https://linkedin.com/in/fabio-faule)
 
 ---
 
-## 🙏 Acknowledgments
+## 🙏 Credits
 
-- **pvlib-python** - Solar modeling library
-- **Open-Meteo** - Free weather API
-- **FastAPI** - Modern web framework
-- **Leaflet** - Interactive maps library
-
+- **pvlib-python** - Amazing library, great documentation
+- **Open-Meteo** - Free weather API that actually works
+- **FastAPI community** - Super helpful docs and examples
+- 
 ---
 
-## 📧 Contact
+## 📧 Questions?
 
-For questions or collaboration opportunities:
-- 📧 Email: your.email@example.com
-- 💼 LinkedIn: [Connect with me](https://linkedin.com/in/yourprofile)
-
+Feel free to reach out! I'm happy to:
+- Explain how something works
+- Discuss the solar modeling approach
+- Share what I've learned
+- Get feedback on my code
+  
 ---
 
 <div align="center">
-  <strong>⭐ Star this repo if you find it useful!</strong>
-  <br><br>
-  Made with ❤️ for the energy transition
+  <em>"Not perfect, but it works!"</em>
 </div>
