@@ -39,7 +39,7 @@ This is a **personal project** I built to combine my background in energy engine
 - **⚙️ Plant Configuration**: Set your system parameters (power, tilt, orientation)
 - **🔬 Physics-Based Modeling**: Uses pvlib (the industry standard library)
 - **📊 Detailed Output**: Hourly production curve, weather data, performance metrics
-- **🌐 Bilingual**: Italian and English (my English might need work 😅)
+- **🌐 Language**: Italian (English is on the way, I'm working on the double language frontend 😅)
 
 ### Advanced Options
 - Different module technologies (mono, poly, thin-film)
