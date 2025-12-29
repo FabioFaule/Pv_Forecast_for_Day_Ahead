@@ -83,8 +83,8 @@ That's it!
 
 1. **Clone this thing**
 ```bash
-git clone https://github.com/FabioFaule/pv-forecast.git
-cd pv-forecast
+git clone https://github.com/FabioFaule/Pv_Forecast_for_Day_Ahead.git
+cd Pv_Forecast_for_Day_Ahead
 ```
 
 2. **Install Python packages**
@@ -109,7 +109,7 @@ That's it! No database, no environment variables, no complicated setup.
 ## 📂 Project Structure
 
 ```
-pv-forecast/
+Pv_Forecast_for_Day_Ahead/
 ├── backend/
 │   ├── main.py           # API endpoints
 │   ├── meteo.py          # Gets weather from Open-Meteo
