@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Previsione Fotovoltaico - Day Ahead</title>
+  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <link rel="stylesheet" href="/static/style.css">
+
+  <meta name="description" content="Day-ahead photovoltaic production forecast using advanced solar models">
+<meta name="keywords" content="photovoltaic, solar forecast, PV production, solar energy">
+<meta name="author" content="PV Forecast Tool">
+<link rel="canonical" href="https://tuodominio.it/">
+
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>☀️ Previsione Fotovoltaico</h1>
+      <p>Calcolo professionale della produzione day-ahead</p>
+    </header>
+    <div class="lang-switch">
+      <button onclick="setLang('it')">IT</button>
+      <button onclick="setLang('en')">EN</button>
+    </div>
+
+
+    <div id="alerts"></div>
+
+    <div class="main-grid">
+      <!-- LOCALIZZAZIONE -->
+      <div class="card">
+        <h3>📍 Localizzazione</h3>
+        
+        <div class="tab-buttons">
+          <button class="tab-btn active" onclick="switchTab(event, 'address-tab')">🏠 Indirizzo</button>
+          <button class="tab-btn" onclick="switchTab(event, 'coords-tab')">📌 Coordinate</button>
+        </div>
+
+        <div id="address-tab" class="tab-content active">
+          <div class="form-group">
+            <label>🔍 Cerca Indirizzo</label>
+            <div class="search-group">
+              <input id="address-search" type="text" placeholder="Es: Via Roma 10, Milano">
+              <button class="btn-search" onclick="searchAddress()" id="search-btn">Cerca</button>
+            </div>
+          </div>
+          <div id="search-results">
+            <div id="results-list"></div>
+          </div>
+          <div id="selected-address">
+            <strong>✓ Selezionato:</strong> <span id="selected-addr-text"></span>
+          </div>
+        </div>
+
+        <div id="coords-tab" class="tab-content">
+          <div class="form-group">
+            <label>🧭 Latitudine</label>
+            <input id="manual-lat" type="number" placeholder="45.4642" min="-90" max="90" step="0.0001" value="45.0">
+          </div>
+          <div class="form-group">
+            <label>🧭 Longitudine</label>
+            <input id="manual-lon" type="number" placeholder="9.1900" min="-180" max="180" step="0.0001" value="9.0">
+          </div>
+          <button class="btn-apply" onclick="applyManualCoords()">Applica Coordinate</button>
+        </div>
+      </div>
+
+      <!-- PARAMETRI BASE -->
+      <div class="card">
+        <h3>⚡ Parametri Impianto</h3>
+        
+        <div class="form-section">
+          <div class="form-group">
+            <label>⚡ Potenza (kWp)</label>
+            <input id="kwp" type="number" placeholder="5.5" min="0.1" max="1000" step="0.1" value="5">
+          </div>
+
+        <div class="form-group">
+          <label>📐 Inclinazione (°)<span class="info-icon" data-tooltip="Angolo di inclinazione dei pannelli rispetto al suolo. 30-35° è ottimale per l'Italia">ℹ️</span></label>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <input id="tilt" type="range" min="0" max="90" value="30" style="flex: 1;">
+            <input id="tilt-input" type="number" min="0" max="90" value="30" 
+                  style="width: 70px; padding: 0.5rem; text-align: center;">
+          </div>
+          <div class="range-value">
+            <span id="tilt-value">30°</span>
+          </div>
+        </div>
+
+          <div class="form-group">
+            <label>🧭 Orientamento (Azimuth)<span class="info-icon multiline" data-tooltip="0°=Sud (ottimale), 90°=Est, 180°=Nord, 270°=Ovest. Sud massimizza la produzione annuale">ℹ️</span></label>
+            <div style="display: flex; gap: 0.5rem;">
+              <select id="azimuth" style="flex: 1;">
+                <option value="0">Sud (0°)</option>
+                <option value="-45">Sud-Est (-45°)</option>
+                <option value="-90">Est (-90°)</option>
+                <option value="45">Sud-Ovest (45°)</option>
+                <option value="90">Ovest (+90°)</option>
+                <option value="180">Nord (180°)</option>
+                <option value="custom">Personalizzato...</option>
+              </select>
+              <input id="azimuth-input" type="number" min="-180" max="180" placeholder="-180 to 180" 
+                    style="width: 80px; padding: 0.5rem; text-align: center; display: none;">
+            </div>
+            <small style="color: #94a3b8; font-size: 0.85rem; margin-top: 4px; display: block;">
+               0° = Sud, −90° = Est, +90° = Ovest, ±180° = Nord
+            </small>
+          </div>
+
+          <!-- SEZIONE AVANZATA COLLAPSABILE -->
+          <div class="advanced-section">
+            <button class="toggle-advanced" id="toggle-advanced-btn" onclick="toggleAdvanced()">
+              <span class="toggle-icon">▶</span>
+              <span>Parametri Avanzati</span>
+              <span class="badge-pro">PRO</span>
+            </button>
+
+            <div id="advanced-content" style="display: none;">
+              
+              <!-- MODULO -->
+              <div class="advanced-group">
+                <h4>🔷 Tecnologia Modulo</h4>
+                
+                <div class="form-group">
+                  <label>Tipo Modulo<span class="info-icon multiline" data-tooltip="Mono Premium: massima efficienza (22%), Mono Standard: miglior rapporto qualità/prezzo (20%)">ℹ️</span></label>
+                  <select id="module-type">
+                    <option value="mono_premium">Monocristallino Premium (η=22%, γ=-0.38%/°C)</option>
+                    <option value="mono_standard" selected>Monocristallino Standard (η=20%, γ=-0.40%/°C)</option>
+                    <option value="poly">Policristallino (η=17%, γ=-0.43%/°C)</option>
+                    <option value="thin_film">Thin-Film (η=15%, γ=-0.25%/°C)</option>
+                  </select>
+                  <small style="color: #94a3b8; font-size: 0.8rem; margin-top: 4px; display: block;">
+                    I parametri elettrici sono pre-configurati in base alla tecnologia
+                  </small>
+                </div>
+              </div>
+
+              <!-- PERDITE SISTEMA -->
+              <div class="advanced-group">
+                <h4>⚠️ Perdite di Sistema</h4>
+                
+                <div class="form-group">
+                  <label>Perdite DC Cabling (%)<span class="info-icon multiline" data-tooltip="Perdite nei cavi tra pannelli e inverter. 1-2% è standard, >3% indica cavi sottodimensionati">ℹ️</span></label>
+                  <input id="dc-losses" type="range" min="0" max="5" step="0.5" value="2">
+                  <div class="range-value"><span id="dc-losses-value">2%</span></div>
+                </div>
+
+                <div class="form-group">
+                  <label>Perdite AC Cabling (%)</label>
+                  <input id="ac-losses" type="range" min="0" max="3" step="0.5" value="1">
+                  <div class="range-value"><span id="ac-losses-value">1%</span></div>
+                </div>
+
+                <div class="form-group">
+                  <label>Mismatch (%)</label>
+                  <input id="mismatch-losses" type="range" min="0" max="5" step="0.5" value="2">
+                  <div class="range-value"><span id="mismatch-losses-value">2%</span></div>
+                </div>
+
+                <div class="form-group">
+                  <label>Soiling - Sporcizia (%)<span class="info-icon multiline" data-tooltip="Perdite dovute a polvere, polline, escrementi. 2% con pulizia regolare, 5-10% senza manutenzione">ℹ️</span></label>
+                  <input id="soiling-losses" type="range" min="0" max="10" step="0.5" value="2">
+                  <div class="range-value"><span id="soiling-losses-value">2%</span></div>
+                </div>
+
+                <div class="form-group">
+                  <label>Efficienza Inverter (%)<span class="info-icon multiline" data-tooltip="Efficienza di conversione DC→AC. Inverter moderni: 96-98%. Micro-inverter: 95-97%">ℹ️</span></label>
+                  <input id="inverter-eff" type="range" min="90" max="99" step="0.5" value="97">
+                  <div class="range-value"><span id="inverter-eff-value">97%</span></div>
+                </div>
+
+                <div class="total-losses-box">
+                  <strong>Perdite Totali:</strong> <span id="total-losses-display">14.0%</span>
+                </div>
+              </div>
+
+              <!-- ALBEDO -->
+              <div class="advanced-group">
+                <h4>🌍 Condizioni Terreno</h4>
+                
+                <div class="form-group">
+                  <label>Albedo (Riflettività)</label>
+                  <select id="albedo">
+                    <option value="0.15">Asfalto / Cemento scuro (0.15)</option>
+                    <option value="0.20" selected>Erba / Terra (0.20)</option>
+                    <option value="0.40">Sabbia chiara (0.40)</option>
+                    <option value="0.70">Neve (0.70)</option>
+                  </select>
+                  <small style="color: #94a3b8; font-size: 0.8rem; margin-top: 4px; display: block;">
+                    Influenza l'irraggiamento riflesso sul retro dei pannelli
+                  </small>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <button class="btn-calculate" onclick="calculate()" id="btn-calc">
+            Calcola Previsione
+          </button>
+          <!-- Progress Indicator -->
+          <div id="calc-progress" class="calc-progress" style="display: none;">
+            <div class="progress-step">
+              <span class="step-icon" id="step-1">⏳</span>
+              <span class="step-text">Recupero dati meteo...</span>
+            </div>
+            <div class="progress-step">
+              <span class="step-icon" id="step-2">⏳</span>
+              <span class="step-text">Calcolo irraggiamento solare...</span>
+            </div>
+            <div class="progress-step">
+              <span class="step-icon" id="step-3">⏳</span>
+              <span class="step-text">Simulazione produzione...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAPPA -->
+      <div class="card map-card">
+        <h3>🗺️ Mappa</h3>
+        <div id="map"></div>
+        <div class="map-info" id="map-info">
+          <div class="map-coords" id="map-coords">45.0000°, 9.0000°</div>
+          <div class="map-status" id="map-status">✓ Posizione confermata</div>
+        </div>
+        <div class="map-buttons" id="map-buttons" style="display: none;">
+          <button class="btn-confirm" onclick="confirmMapPosition()">Conferma</button>
+          <button class="btn-cancel" onclick="cancelMapPosition()">Annulla</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RISULTATI -->
+    <div class="card chart-section" style="display: none;" id="chart-card">
+      <h3 id="forecast-title">📊 Previsione Produzione</h3>
+      
+      <div id="results-placeholder" class="no-data">
+        <div class="no-data-icon">📈</div>
+        <h3>Nessun dato ancora</h3>
+        <p>Configura i parametri e clicca "Calcola Previsione"</p>
+      </div>
+
+      <div id="results" style="display: none;">
+        <div class="chart-stats">
+          <div class="stat-box">
+            <div class="stat-label">Energia Giornaliera</div>
+            <div class="stat-value" id="total-energy">--</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Potenza Media</div>
+            <div class="stat-value" id="avg-power">--</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Potenza Picco</div>
+            <div class="stat-value" id="peak-power">--</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Ore Produttive</div>
+            <div class="stat-value" id="prod-hours">--</div>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="chart"></canvas>
+        </div>
+
+
+
+        <!-- WEATHER STRIP -->
+        <div class="weather-strip">
+          <div class="weather-item">
+            <div class="weather-icon" id="temp-icon">🌡️</div>
+            <div class="weather-label">Temperatura</div>
+            <div class="weather-value" id="weather-temp">--°C</div>
+            <div class="weather-desc" id="weather-temp-desc">--</div>
+          </div>
+
+          <div class="weather-item">
+            <div class="weather-icon" id="cloud-icon">☀️</div>
+            <div class="weather-label">Nuvolosità</div>
+            <div class="weather-value" id="weather-condition">--</div>
+            <div class="weather-desc" id="weather-condition-desc">--</div>
+          </div>
+
+          <div class="weather-item">
+            <div class="weather-icon">💨</div>
+            <div class="weather-label">Vento</div>
+            <div class="weather-value" id="weather-wind">-- m/s</div>
+            <div class="weather-desc">Velocità massima</div>
+          </div>
+
+          <div class="weather-item">
+            <div class="weather-icon">☀️</div>
+            <div class="weather-label">Irraggiamento</div>
+            <div class="weather-value" id="weather-irrad">-- W/m²</div>
+            <div class="weather-desc">POA medio</div>
+          </div>
+        </div>
+
+        <!-- TABELLA ORARIA DETTAGLIATA -->
+        <div class="hourly-table-container" style="margin-top: 2rem;">
+          <h4 style="color: #f1f5f9; margin-bottom: 1rem;">📋 Dettaglio Orario</h4>
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; color: #cbd5e1;">
+              <thead>
+                <tr style="background: rgba(255,255,255,0.05); text-align: left;">
+                  <th style="padding: 0.75rem; border-bottom: 2px solid rgba(255,255,255,0.1);">Ora</th>
+                  <th style="padding: 0.75rem; border-bottom: 2px solid rgba(255,255,255,0.1);">Temp. Aria</th>
+                  <th style="padding: 0.75rem; border-bottom: 2px solid rgba(255,255,255,0.1);">Nuvole</th>
+                  <th style="padding: 0.75rem; border-bottom: 2px solid rgba(255,255,255,0.1);">Vento</th>
+                  <th style="padding: 0.75rem; border-bottom: 2px solid rgba(255,255,255,0.1);">POA</th>
+                  <th style="padding: 0.75rem; border-bottom: 2px solid rgba(255,255,255,0.1);">Temp. Celle</th>
+                  <th style="padding: 0.75rem; border-bottom: 2px solid rgba(255,255,255,0.1);">Potenza</th>
+                </tr>
+              </thead>
+              <tbody id="weather-hourly-table">
+                <!-- Popolato da JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+                <!-- METRICHE AVANZATE -->
+        <div id="advanced-metrics-section" style="display: none; margin-top: 2rem;">
+          <h4 style="color: #f1f5f9; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            📈 Metriche Avanzate
+            <span class="badge-pro">PRO</span>
+          </h4>
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <div class="metric-label">
+                Performance Ratio (PR)
+                <span class="info-icon multiline" data-tooltip="Rapporto tra energia reale e teorica. >80% è eccellente, 75-80% buono, <70% indica problemi">ℹ️</span>
+              </div>
+              <div class="metric-value" id="metric-pr">--</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">
+                Capacity Factor
+                <span class="info-icon multiline" data-tooltip="Percentuale del tempo in cui l'impianto produce alla potenza nominale. 15-25% è tipico in Italia">ℹ️</span>
+              </div>
+              <div class="metric-value" id="metric-cf">--</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">
+              Specific Yield
+              <span class="info-icon multiline" data-tooltip="kWh prodotti per ogni kWp installato. Usato per confrontare impianti di diverse dimensioni">ℹ️</span>
+            </div>
+              <div class="metric-value" id="metric-yield">--</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">Temp. Media Celle</div>
+              <div class="metric-value" id="metric-avg-temp">--</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">Temp. Max Celle</div>
+              <div class="metric-value" id="metric-max-temp">--</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">Perdite Applicate</div>
+              <div class="metric-value" id="metric-losses">--</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div> <!-- Fine chart-card -->
+    
+    <!-- FOOTER -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>ℹ️ Informazioni</h4>
+          <p>
+            Previsione fotovoltaica basata su <strong>pvlib-python</strong> e dati meteo <strong>Open-Meteo</strong>.
+            Il calcolo include modelli avanzati di irraggiamento (Perez), temperatura celle (NOCT), 
+            e decomposizione spettrale (Erbs).
+          </p>
+        </div>
+        
+        <div class="footer-section">
+          <h4>⚠️ Disclaimer</h4>
+          <p>
+            <strong>Questi sono dati stimati</strong> basati su previsioni meteorologiche. 
+            La produzione reale può variare in base a ombreggiature, degrado dei pannelli, 
+            orientamento preciso, sporcizia, e condizioni meteo effettive. 
+            Non costituisce garanzia di produzione.
+          </p>
+        </div>
+        
+        <div class="footer-section">
+          <h4>📚 Tecnologie</h4>
+          <ul class="tech-list">
+            <li><a href="https://pvlib-python.readthedocs.io/" target="_blank">pvlib-python</a> - Modellazione fotovoltaica</li>
+            <li><a href="https://open-meteo.com/" target="_blank">Open-Meteo API</a> - Previsioni meteorologiche</li>
+            <li><a href="https://leafletjs.com/" target="_blank">Leaflet</a> - Mappe interattive</li>
+            <li><a href="https://www.chartjs.org/" target="_blank">Chart.js</a> - Grafici</li>
+          </ul>
+        </div>
+        
+        <div class="footer-bottom">
+          <p>
+            Versione 1.0 Beta | 
+            <a href="mailto:support@example.com">Segnala un problema</a> | 
+            Sviluppato con ❤️ per la transizione energetica
+          </p>
+          <p class="copyright">
+            © 2024 PV Forecast Tool | Dati meteo: Open-Meteo | Tutti i diritti riservati
+          </p>
+        </div>
+      </div>
+    </footer>
+
+  </div> <!-- Fine container -->
+
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
